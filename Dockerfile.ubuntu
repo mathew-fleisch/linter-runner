@@ -1,0 +1,41 @@
+FROM ubuntu:20.04
+LABEL maintainer="Mathew Fleisch <mathew.fleisch@gmail.com>"
+ENV ASDF_DATA_DIR /opt/asdf
+
+# Install asdf dependencies
+WORKDIR /root
+COPY .tool-versions /root/.tool-versions
+COPY pin /root/pin
+
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && apt update \
+    && DEBIAN_FRONTEND=noninteractive apt install -y curl wget make tar git jq zip sudo libicu66 tzdata \
+    && echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && apt-get clean \
+    && apt-get dist-upgrade -u -y \
+    && useradd -ms /bin/bash github \
+    && usermod -aG sudo github \
+    && addgroup runners \
+    && adduser github runners
+
+USER github
+WORKDIR /home/github
+COPY --chown=github:github .tool-versions ./.tool-versions
+COPY --chown=github:github pin ./pin
+RUN sudo mkdir -p $ASDF_DATA_DIR \
+    && sudo chown -R github:runners $ASDF_DATA_DIR \
+    && sudo chmod -R g+w $ASDF_DATA_DIR \
+    && git clone --depth 1 https://github.com/asdf-vm/asdf.git ${ASDF_DATA_DIR} --branch v0.8.1 \
+    && echo "export ASDF_DATA_DIR=${ASDF_DATA_DIR}" | tee -a /home/github/.bashrc \
+    && echo ". ${ASDF_DATA_DIR}/asdf.sh" | tee -a /home/github/.bashrc \
+    && . ${ASDF_DATA_DIR}/asdf.sh \
+    && asdf update
+    # && while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions \
+    # && asdf install
+
+# Use this to debug without entrypoint
+# CMD /bin/sh -c "/bin/bash ${ASDF_DATA_DIR}/asdf.sh && /bin/bash"
+
+COPY --chown=github:github entrypoint.sh ./entrypoint.sh
+RUN sudo chmod u+x ./entrypoint.sh
+CMD /bin/sh -c ". ${ASDF_DATA_DIR}/asdf.sh && /home/github/entrypoint.sh"

@@ -1,0 +1,48 @@
+FROM alpine:3.14.0
+LABEL maintainer="Mathew Fleisch <mathew.fleisch@gmail.com>"
+ENV ASDF_DATA_DIR /opt/asdf
+
+# Install asdf dependencies
+WORKDIR /root
+COPY .tool-versions /root/.tool-versions
+COPY pin /root/pin
+
+RUN apk add libgdiplus --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ \
+    && apk update && apk add --no-cache --update libc6-compat bash curl wget git sudo jq icu-libs icu-dev krb5-libs libgcc libintl libssl1.1 libstdc++ zlib libc6-compat \
+    && rm /bin/sh && ln -s /bin/bash /bin/sh \
+    && ln -s /lib64/ld-linux-x86-64.so.2 /lib/ld-linux-x86-64.so.2 \
+    && echo "%sudo ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers.d/github | tee -a /etc/sudoers \
+    && mkdir -p /usr/share/dotnet \
+    && wget -q https://download.visualstudio.microsoft.com/download/pr/39d1095f-2100-4802-87db-624dab2c7650/2c79efc252b0a3894a85f453367f25f1/dotnet-sdk-3.1.411-linux-musl-x64.tar.gz -O /usr/share/dotnet/dotnet-sdk-3.1.411-linux-musl-x64.tar.gz \
+    && cd /usr/share/dotnet \
+    && tar -xzf dotnet-sdk-3.1.411-linux-musl-x64.tar.gz \
+    && ln -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet
+
+RUN mkdir -p $ASDF_DATA_DIR \
+    && git clone --depth 1 https://github.com/asdf-vm/asdf.git $ASDF_DATA_DIR \
+    && . $ASDF_DATA_DIR/asdf.sh \
+    && echo -e '\n. $ASDF_DATA_DIR/asdf.sh' >> $HOME/.bashrc \
+    && echo -e '\n. $ASDF_DATA_DIR/asdf.sh' >> $HOME/.profile \
+    && asdf update \
+    && while IFS= read -r line; do asdf plugin add $(echo "$line" | awk '{print $1}'); done < .tool-versions \
+    && asdf install \
+    && addgroup -S sudo \
+    && addgroup -S github \
+    && adduser -S github -G github -G sudo
+
+USER github
+WORKDIR /home/github
+COPY --chown=github:github .tool-versions ./.tool-versions
+COPY --chown=github:github pin ./pin
+RUN sudo chown github:github -R ${ASDF_DATA_DIR} \
+    && . ${ASDF_DATA_DIR}/asdf.sh \
+    && asdf update \
+    && echo "$(while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions)" \
+    && asdf install
+
+# Use this to debug without entrypoint
+# CMD /bin/sh -c "/bin/bash ${ASDF_DATA_DIR}/asdf.sh && /bin/bash"
+
+COPY --chown=github:github entrypoint.sh ./entrypoint.sh
+RUN sudo chmod u+x ./entrypoint.sh
+CMD /bin/sh -c ". ${ASDF_DATA_DIR}/asdf.sh && /home/github/entrypoint.sh"
