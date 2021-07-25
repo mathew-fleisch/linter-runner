@@ -36,6 +36,7 @@ RUN sudo mkdir -p $ASDF_DATA_DIR \
     && echo ". ${ASDF_DATA_DIR}/asdf.sh" | tee -a /home/github/.bashrc \
     && . ${ASDF_DATA_DIR}/asdf.sh \
     && asdf update \
+    && while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions \
     && asdf install
 
 # Use this to debug without entrypoint
