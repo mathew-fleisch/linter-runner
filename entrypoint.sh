@@ -1,5 +1,8 @@
 #!/bin/sh
 
+LABELS="${LABELS:-}"
+RUNNER_WORKDIR="${RUNNER_WORKDIR:-_work}"
+
 if [ -z "$GIT_PAT" ]; then
     echo "Missing environment variable github token (GIT_PAT)"
     exit 1
@@ -35,7 +38,8 @@ echo "latest version: ${GIT_RUNNER_VERSION}"
 curl -Ls https://github.com/actions/runner/releases/download/v${GIT_RUNNER_VERSION}/actions-runner-${OS}-${ARCH}-${GIT_RUNNER_VERSION}.tar.gz | tar -zx
 
 # Hacky workaround because the installation script doesn't include a flag for automation to not prompt a non-existent user
-sed -i 's/\$apt_get install/DEBIAN_FRONTEND=noninteractive $apt_get install/g' ./bin/installdependencies.sh
+# sed -i 's/\$apt_get install/DEBIAN_FRONTEND=noninteractive $apt_get install/g' ./bin/installdependencies.sh
+./bin/installdependencies.sh
 
 # Run the dependency installation script
 sudo ./bin/installdependencies.sh
@@ -50,6 +54,7 @@ export RUNNER_TOKEN=$(echo $payload | jq -r '.token')
     --name $(hostname) \
     --token ${RUNNER_TOKEN} \
     --url https://github.com/${GIT_OWNER}/${GIT_REPO} \
+    --work ${RUNNER_WORKDIR} \
     --labels ${LABELS} \
     --unattended \
     --replace

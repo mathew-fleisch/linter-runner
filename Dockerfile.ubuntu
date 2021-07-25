@@ -1,6 +1,12 @@
 FROM ubuntu:20.04
 LABEL maintainer="Mathew Fleisch <mathew.fleisch@gmail.com>"
-ENV ASDF_DATA_DIR /opt/asdf
+
+ENV GIT_PAT ""
+ENV GIT_OWNER ""
+ENV GIT_REPO ""
+ENV LABELS ""
+ENV RUNNER_WORKDIR "_work"
+ENV ASDF_DATA_DIR=/opt/asdf
 
 # Install asdf dependencies
 WORKDIR /root
