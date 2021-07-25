@@ -37,10 +37,6 @@ GIT_RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/release
 echo "latest version: ${GIT_RUNNER_VERSION}"
 curl -Ls https://github.com/actions/runner/releases/download/v${GIT_RUNNER_VERSION}/actions-runner-${OS}-${ARCH}-${GIT_RUNNER_VERSION}.tar.gz | tar -zx
 
-# Hacky workaround because the installation script doesn't include a flag for automation to not prompt a non-existent user
-# sed -i 's/\$apt_get install/DEBIAN_FRONTEND=noninteractive $apt_get install/g' ./bin/installdependencies.sh
-./bin/installdependencies.sh
-
 # Run the dependency installation script
 sudo ./bin/installdependencies.sh
 
