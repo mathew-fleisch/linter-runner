@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LABELS="${LABELS:-}"
+LABELS="${LABELS:-linter}"
 RUNNER_WORKDIR="${RUNNER_WORKDIR:-_work}"
 
 if [ -z "$GIT_PAT" ]; then
