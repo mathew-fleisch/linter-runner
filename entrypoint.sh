@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2155,SC2086
 
 LABELS="${LABELS:-linter}"
 RUNNER_WORKDIR="${RUNNER_WORKDIR:-_work}"
@@ -16,7 +17,7 @@ if [ -z "$GIT_REPO" ]; then
     exit 1
 fi
 
-# If a kubeconfig env var exists, set it as the default kubecofig
+# If a kubeconfig env var exists, set it as the default kubeconfig
 if [ -n "$KUBECONFIG_CONTENTS" ]; then
     mkdir -p ~/.kube
     echo "$KUBECONFIG_CONTENTS" > ~/.kube/config
@@ -35,7 +36,9 @@ esac
 # everytime a new version of the agent is released.
 GIT_RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name' | sed -e 's/^v//g')
 echo "latest version: ${GIT_RUNNER_VERSION}"
-curl -Ls https://github.com/actions/runner/releases/download/v${GIT_RUNNER_VERSION}/actions-runner-${OS}-${ARCH}-${GIT_RUNNER_VERSION}.tar.gz | tar -zx
+DOWNLOAD_URL="https://github.com/actions/runner/releases/download/v${GIT_RUNNER_VERSION}/actions-runner-${OS}-${ARCH}-${GIT_RUNNER_VERSION}.tar.gz"
+echo "Downloading: ${DOWNLOAD_URL}"
+curl -Ls "$DOWNLOAD_URL" | tar -zx
 
 # Run the dependency installation script
 sudo ./bin/installdependencies.sh
@@ -47,11 +50,11 @@ payload=$(curl -sX POST -H "Authorization: token ${GIT_PAT}" ${REG_URL})
 export RUNNER_TOKEN=$(echo $payload | jq -r '.token')
 
 ./config.sh \
-    --name $(hostname) \
-    --token ${RUNNER_TOKEN} \
-    --url https://github.com/${GIT_OWNER}/${GIT_REPO} \
-    --work ${RUNNER_WORKDIR} \
-    --labels ${LABELS} \
+    --name "$(hostname)" \
+    --token "${RUNNER_TOKEN}" \
+    --url "https://github.com/${GIT_OWNER}/${GIT_REPO}" \
+    --work "${RUNNER_WORKDIR}" \
+    --labels "${LABELS}" \
     --unattended \
     --replace
 
