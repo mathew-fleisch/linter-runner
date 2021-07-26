@@ -66,6 +66,16 @@ remove() {
 trap 'remove; exit 130' INT
 trap 'remove; exit 143' TERM
 sleep 5
+# Acknowledge the runner is running
+if [ -n "$PING" ]; then
+    if [ "$PING" != "ping" ]; then
+        curl -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${GIT_TOKEN}" \
+            --request POST \
+            --data '{"event_type": "pong", "client_payload": {"pong": "'$PING'", "triggered": "'"$(date +%s)"'"}}' \
+            https://api.github.com/repos/mathew-fleisch/runner-state/dispatches
+    fi
+fi
 echo "./run.sh $*"
 ./run.sh "$*" &
 
