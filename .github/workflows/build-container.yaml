@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build and Push Linter Runner container
-    runs-on: ubuntu-latest
+    runs-on: generic-runner
     steps:
       -
         name: Checkout
