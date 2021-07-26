@@ -38,7 +38,9 @@ RUN sudo mkdir -p $ASDF_DATA_DIR \
     && . ${ASDF_DATA_DIR}/asdf.sh \
     && asdf update \
     && while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions \
-    && asdf install
+    && asdf install \
+    && wget https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -O /usr/local/bin/semver \
+    && chmod +x /usr/local/bin/semver
 
 # Use this to debug without entrypoint
 # CMD /bin/sh -c "/bin/bash ${ASDF_DATA_DIR}/asdf.sh && /bin/bash"
