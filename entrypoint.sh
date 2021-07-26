@@ -72,7 +72,7 @@ if [ -n "$PING" ]; then
     if [ "$PING" != "pong" ]; then
         echo "Acknowledging active runner state"
         curl -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Authorization: token ${GIT_TOKEN}" \
+            -H "Authorization: token ${GIT_PAT}" \
             --request POST \
             --data '{"event_type": "pong", "client_payload": {"pong": "'$PING'", "triggered": "'"$(date +%s)"'"}}' \
             https://api.github.com/repos/mathew-fleisch/runner-state/dispatches
