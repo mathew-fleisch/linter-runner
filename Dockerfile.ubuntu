@@ -39,8 +39,9 @@ RUN sudo mkdir -p $ASDF_DATA_DIR \
     && asdf update \
     && while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions \
     && asdf install \
-    && wget https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -O /usr/local/bin/semver \
-    && chmod +x /usr/local/bin/semver
+    && sudo wget https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -O /usr/local/bin/semver \
+    && sudo chown -R github:runners /usr/local/bin \
+    && sudo chmod +x /usr/local/bin/semver
 
 # Use this to debug without entrypoint
 # CMD /bin/sh -c "/bin/bash ${ASDF_DATA_DIR}/asdf.sh && /bin/bash"
