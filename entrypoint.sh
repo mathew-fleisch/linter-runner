@@ -68,7 +68,7 @@ trap 'remove; exit 143' TERM
 sleep 5
 # Acknowledge the runner is running
 if [ -n "$PING" ]; then
-    if [ "$PING" != "ping" ]; then
+    if [ "$PING" != "pong" ]; then
         curl -H "Accept: application/vnd.github.everest-preview+json" \
             -H "Authorization: token ${GIT_TOKEN}" \
             --request POST \
