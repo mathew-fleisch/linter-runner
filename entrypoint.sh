@@ -31,6 +31,19 @@ case $ARCH in
   x86_64) ARCH="x64";;
 esac
 
+# Ensure asdf is installed
+if ! command -v asdf >/dev/null 2>&1; then
+  echo "asdf is required to run this entrypoint"
+  exit 1
+fi
+# Set the default version of all asdf dependencies
+echo "Setting default asdf versions"
+for plugin in $(asdf plugin list); do
+    latest_version=$(asdf list ${plugin} | sort -V | tail -1)
+    echo "$plugin: $latest_version"
+    asdf global $plugin $latest_version
+done
+
 # The Github Action runner is installed in the entrypoint so that it always is running the latest version
 # If the agent is installed in the docker container, a new version of the docker container needs to be published
 # everytime a new version of the agent is released.
