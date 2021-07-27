@@ -36,6 +36,7 @@ if ! command -v asdf >/dev/null 2>&1; then
   echo "asdf is required to run this entrypoint"
   exit 1
 fi
+
 # Set the default version of all asdf dependencies
 echo "Setting default asdf versions"
 for plugin in $(asdf plugin list); do
@@ -79,6 +80,7 @@ remove() {
 trap 'remove; exit 130' INT
 trap 'remove; exit 143' TERM
 sleep 5
+
 echo "./run.sh $*"
 ./run.sh "$*" &
 
