@@ -23,7 +23,10 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && useradd -ms /bin/bash github \
     && usermod -aG sudo github \
     && addgroup runners \
-    && adduser github runners
+    && adduser github runners \
+    && wget https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -O /usr/local/bin/semver \
+    && chown -R github:runners /usr/local/bin \
+    && chmod +x /usr/local/bin/semver
 
 USER github
 WORKDIR /home/github
@@ -38,10 +41,7 @@ RUN sudo mkdir -p $ASDF_DATA_DIR \
     && . ${ASDF_DATA_DIR}/asdf.sh \
     && asdf update \
     && echo "$(while IFS= read -r line; do asdf plugin add $(echo $line | awk '{print $1}'); done < .tool-versions)" \
-    && asdf install \
-    && sudo wget https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -O /usr/local/bin/semver \
-    && sudo chown -R github:runners /usr/local/bin \
-    && sudo chmod +x /usr/local/bin/semver
+    && asdf install
 
 # Use this to debug without entrypoint
 # CMD /bin/sh -c "/bin/bash ${ASDF_DATA_DIR}/asdf.sh && /bin/bash"
