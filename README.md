@@ -1,7 +1,6 @@
 # Linter (github action runner)
 
 [![Release CI: multi-arch container build & push](https://github.com/mathew-fleisch/linter-runner/actions/workflows/build-container.yaml/badge.svg)](https://github.com/mathew-fleisch/linter-runner/actions/workflows/build-container.yaml)
-<!-- [![Update CI: asdf dependency versions](https://github.com/mathew-fleisch/linter-runner/actions/workflows/update-asdf-versions.yaml/badge.svg)](https://github.com/mathew-fleisch/linter-runner/actions/workflows/update-asdf-versions.yaml) -->
 [Docker Hub](https://hub.docker.com/r/mathewfleisch/linter-runner/tags?page=1&ordering=last_updated)
 
 
