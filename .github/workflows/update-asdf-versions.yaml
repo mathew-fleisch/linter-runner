@@ -7,14 +7,16 @@
 name: Update asdf versions
 on:
   schedule: # trigger daily at 2:30am PT (09:30UTC)
-    - cron:  '30 9 * * *'
+    - cron:  '0 9 * * *'
   repository_dispatch:
     types:
       - trigger-asdf-update
 jobs:
   build:
     name: Update asdf versions
-    runs-on: linter
+    runs-on:
+      - self-hosted
+      - linter
     steps:
       -
         name: Checkout

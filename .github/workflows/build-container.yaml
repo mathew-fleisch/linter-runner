@@ -11,7 +11,9 @@ on:
 jobs:
   build:
     name: Build and Push Linter Runner container
-    runs-on: generic-runner
+    runs-on:
+      - self-hosted
+      - generic-runner
     steps:
       -
         name: Checkout
@@ -45,7 +47,9 @@ jobs:
           context: .
           file: Dockerfile.ubuntu
           platforms: linux/amd64,linux/arm64
-          tags: mathewfleisch/linter-runner:latest,mathewfleisch/linter-runner:${{ env.RELEASE_VERSION }}
+          tags: |
+            mathewfleisch/linter-runner:latest
+            mathewfleisch/linter-runner:${{ env.RELEASE_VERSION }}
           cache-from: type=registry,ref=mathewfleisch/linter-runner:latest
           cache-to: type=inline
 
