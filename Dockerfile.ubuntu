@@ -16,7 +16,7 @@ COPY pin /root/pin
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && apt update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y curl wget make tar git jq zip sudo liblttng-ust-ctl4 liblttng-ust0 libnuma1 liburcu6 libicu66 tzdata \
+    && DEBIAN_FRONTEND=noninteractive apt install -y curl wget make tar git jq zip sudo liblttng-ust-ctl4 liblttng-ust0 libnuma1 liburcu6 libicu66 tzdata liblttng-ust-ctl4 liblttng-ust0 liburcu6 zlib1g-dev \
     && echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && apt-get clean \
     && apt-get dist-upgrade -u -y \
